@@ -30,6 +30,8 @@ function PlayState:enter(params)
     self.level = params.level
 
     self.recoverPoints = 5000
+    self.paddleResizePoints = 3500
+    self.resizeScore = 0
 
     -- give ball random starting velocity
     self.ball.dx = math.random(-200, 200)
@@ -84,8 +86,25 @@ function PlayState:update(dt)
             -- add to score
             self.score = self.score + (brick.tier * 200 + brick.color * 25)
 
+            self.resizeScore = self.resizeScore + (brick.tier * 200 + brick.color * 25)
+
             -- trigger the brick's hit function, which removes it from play
             brick:hit()
+
+            -- if we have enough points, shrink the paddle
+            if self.resizeScore > self.paddleResizePoints then
+                -- can't go below 1 size
+                self.paddle:setSize(self.paddle.size - 1)
+
+                -- increase paddle resize points by 25%
+                self.paddleResizePoints = self.paddleResizePoints + math.min(100000, self.paddleResizePoints * 1.25)
+
+                -- reset resize score
+                self.resizeScore = 0
+
+                -- play shrink sound effect
+                gSounds['shrink']:play()
+            end
 
             -- if we have enough points, recover a point of health
             if self.score > self.recoverPoints then
@@ -175,6 +194,13 @@ function PlayState:update(dt)
                 highScores = self.highScores
             })
         else
+            self.paddle:setSize(self.paddle.size + 1)
+            self.resizeScore = 0
+            self.paddleResizePoints = 3500
+
+            -- play grow sound effect
+            gSounds['grow']:play()
+
             gStateMachine:change('serve', {
                 paddle = self.paddle,
                 bricks = self.bricks,
@@ -210,6 +236,8 @@ function PlayState:render()
 
     self.paddle:render()
     self.ball:render()
+
+    self.paddle:renderParticles()
 
     renderScore(self.score)
     renderHealth(self.health)

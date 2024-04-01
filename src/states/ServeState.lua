@@ -58,6 +58,8 @@ end
 
 function ServeState:render()
     self.paddle:render()
+    self.paddle:renderParticles()
+
     self.ball:render()
 
     for k, brick in pairs(self.bricks) do

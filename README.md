@@ -6,9 +6,10 @@ The game is a clone of the classic Atari game Breakout, where the player must us
 
 The goal of this project is to take the provided [Love2D]() project and add several features to it:
 
+- [x] Powerup Class and spawning
 - [ ] Double Ball Powerup
-- [x] Locked bricks with
 - [ ] Key Powerup
+- [x] Locked bricks that require key powerup to break
 - [x] Dynamic paddle size based on score and losing a life
 
 ## Dynamic Paddle Size

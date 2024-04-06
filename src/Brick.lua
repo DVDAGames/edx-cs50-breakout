@@ -105,7 +105,7 @@ end
     Triggers a hit on the brick, taking it out of play if at 0 health or
     changing its color otherwise.
 ]]
-function Brick:hit(powerups)
+function Brick:hit(powerups, unlock)
     -- if the player has no key and the brick is locked
     if self.isLocked and powerups['key'] == 0 then
         self.psystem:setColors(
@@ -148,6 +148,8 @@ function Brick:hit(powerups)
         gSounds['unlocked']:play()
 
         self.isLocked = false
+
+        unlock()
     else
         -- set the particle system to interpolate between two colors; in this case, we give
         -- it our self.color but with varying alpha; brighter for higher tiers, fading to 0

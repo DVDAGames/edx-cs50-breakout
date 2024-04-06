@@ -24,7 +24,6 @@
     http://www.soundcloud.com/empyreanma
 ]]
 
--- lovebird = require("lovebird")
 
 require 'src/Dependencies'
 
@@ -160,8 +159,6 @@ end
     across system hardware.
 ]]
 function love.update(dt)
-    -- lovebird.update()
-
     -- this time, we pass in dt to the state object we're currently using
     gStateMachine:update(dt)
 

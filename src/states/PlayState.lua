@@ -34,6 +34,13 @@ function PlayState:enter(params)
     self.paddleResizePoints = 3500
     self.resizeScore = 0
 
+    self.powerUpTimer = 0
+    self.powerUpScore = 0
+    self.powerUpSpawnTime = 25
+    self.powerUpSpawnScore = 7500
+
+    self.powerup = nil
+
     -- give ball random starting velocity
     self.ball.dx = math.random(-200, 200)
     self.ball.dy = math.random(-50, -60)
@@ -53,9 +60,17 @@ function PlayState:update(dt)
         return
     end
 
+    local bricksLeft = 0
+
+    self.powerUpTimer = self.powerUpTimer + dt
+
     -- update positions based on velocity
     self.paddle:update(dt)
     self.ball:update(dt)
+
+    if self.powerup then
+        self.powerup:update(dt)
+    end
 
     if self.ball:collides(self.paddle) then
         -- raise ball above paddle in case it goes below it, then reverse dy
@@ -81,17 +96,23 @@ function PlayState:update(dt)
     -- detect collision across all bricks with the ball
     for k, brick in pairs(self.bricks) do
 
+        if brick.inPlay then
+            bricksLeft = bricksLeft + 1
+        end
+
         -- only check collision if we're in play
         if brick.inPlay and self.ball:collides(brick) then
 
             -- trigger the brick's hit function
-            local hit = brick:hit(self.paddle.powerups)
+            local hit = brick:hit(self.paddle.powerups, self.unlock)
 
             if hit then
                 -- add to score
                 self.score = self.score + brick.points
 
                 self.resizeScore = self.resizeScore + brick.points
+
+                self.powerUpScore = self.powerUpScore + brick.points
             end
 
             -- if we have enough points, shrink the paddle
@@ -214,6 +235,42 @@ function PlayState:update(dt)
                 recoverPoints = self.recoverPoints
             })
         end
+    else
+        
+
+        -- spawn a key powerup if the player only has locked bricks left
+        if bricksLeft == self.locks and self.paddle.powerups['key'] == 0 then
+            self.powerUpTimer = 0
+            self.powerUpScore = 0
+
+            self.powerup = Powerup(
+                VIRTUAL_WIDTH / 2,
+                VIRTUAL_HEIGHT / 3,
+                'key'
+            )
+
+        -- spawn a power up if the powerup timer or score has been reached
+        elseif self.powerUpTimer > self.powerUpSpawnTime or self.powerUpScore > self.powerUpSpawnScore then
+            self.powerUpTimer = 0
+            self.powerUpScore = 0
+
+            -- generate a powerup
+            if self.paddle.powerups['key'] == 0 and self.locks > 0 then
+                -- we need a key
+                self.powerup = Powerup(
+                    VIRTUAL_WIDTH / 2,
+                    VIRTUAL_HEIGHT / 3,
+                    'key'
+                )
+            elseif self.paddle.powerups['doubleBall'] == 0 then
+                -- we need a double ball
+                self.powerup = Powerup(
+                    VIRTUAL_WIDTH / 2,
+                    VIRTUAL_HEIGHT / 3,
+                    'doubleBall'
+                )
+            end
+        end
     end
 
     -- for rendering particle systems
@@ -242,6 +299,10 @@ function PlayState:render()
 
     self.paddle:renderParticles()
 
+    if self.powerup then
+        self.powerup:render()
+    end
+
     renderScore(self.score)
     renderHealth(self.health)
 
@@ -260,4 +321,8 @@ function PlayState:checkVictory()
     end
 
     return true
+end
+
+function PlayState:unlock()
+    self.locks = clamp(0, self.locks - 1, self.locks)
 end

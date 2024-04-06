@@ -140,7 +140,7 @@ end
     This function is specifically made to piece out the powerups from the
     sprite sheet.
 ]]
-function GenerateQuadsPowerups()
+function GenerateQuadsPowerups(atlas)
     local x = 0
     local y = 192
 
@@ -148,7 +148,7 @@ function GenerateQuadsPowerups()
     local quads = {}
 
     for i = 0, 10 do
-        quads[counter] = love.graphics.newQuad(x, y, 16, 16, gTextures['main']:getDimensions())
+        quads[counter] = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
         x = x + 16
         counter = counter + 1
     end

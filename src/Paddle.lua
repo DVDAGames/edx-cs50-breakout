@@ -75,6 +75,11 @@ function Paddle:init(skin)
     -- into the gPaddleSkins table later
     self.skin = skin
 
+    self.powerups = {
+        ['key'] = 0,
+        ['doubleBall'] = 0
+    }
+
     -- particle system belonging to the paddle, emitted on grow/shrink
     self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 64)
 
@@ -154,4 +159,18 @@ end
 ]]
 function Paddle:renderParticles()
     love.graphics.draw(self.psystem, self.x + self.width / 2, self.y + 4)
+end
+
+--[[
+    Add powerup to the paddle
+]]
+function Paddle:powerup(powerup)
+    self.powerups[powerup] = 1
+end
+
+--[[
+    Remove powerup from the paddle
+]]
+function Paddle:removePowerup(powerup)
+    self.powerups[powerup] = 0
 end

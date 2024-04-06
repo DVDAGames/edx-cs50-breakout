@@ -24,6 +24,8 @@
     http://www.soundcloud.com/empyreanma
 ]]
 
+-- lovebird = require("lovebird")
+
 require 'src/Dependencies'
 
 --[[
@@ -66,7 +68,9 @@ function love.load()
         ['paddles'] = GenerateQuadsPaddles(gTextures['main']),
         ['balls'] = GenerateQuadsBalls(gTextures['main']),
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
-        ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9)
+        ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
+        ['powerBricks'] = GenerateQuadsPowerBricks(gTextures['main']),
+        ['powerups'] = GenerateQuadsPowerups(gTextures['main'])
     }
     
     -- initialize our virtual resolution, which will be rendered within our
@@ -95,6 +99,9 @@ function love.load()
         ['pause'] = love.audio.newSource('sounds/pause.wav', 'static'),
         ['shrink'] = love.audio.newSource('sounds/shrink.wav', 'static'),
         ['grow'] = love.audio.newSource('sounds/grow.wav', 'static'),
+        ['locked'] = love.audio.newSource('sounds/locked.wav', 'static'),
+        ['unlocked'] = love.audio.newSource('sounds/unlocked.wav', 'static'),
+        ['powerup'] = love.audio.newSource('sounds/powerup.wav', 'static'),
 
         ['music'] = love.audio.newSource('sounds/music.wav', 'static')
     }
@@ -153,6 +160,8 @@ end
     across system hardware.
 ]]
 function love.update(dt)
+    -- lovebird.update()
+
     -- this time, we pass in dt to the state object we're currently using
     gStateMachine:update(dt)
 

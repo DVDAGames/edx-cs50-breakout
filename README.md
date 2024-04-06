@@ -75,6 +75,10 @@ To give the paddle growth and shrinking effects a little more "oomph" and make t
 
 To make this appear as expected, the `Paddle:renderParticles()` method needs to be called in the `ServeState:render()` method, after the `self.paddle:render()` call to make sure the particles render on top of the paddle.
 
+## Locked Bricks
+
+Adding locked bricks in a way that feels fair was an interesting challenge. Ultimately I settled on a random system that increases in likelihood as the player progresses and also allows for more locked bricks as the player progresses.
+
 ## Issues with the Current Implementation
 
 ![janky phsyics](./assets/breakout-janky.gif)

@@ -47,6 +47,16 @@ function LevelMaker.createMap(level)
     -- highest color of the highest tier, no higher than 5
     local highestColor = math.min(5, level % 5 + 3)
 
+    -- randomly decide if this level will have locks
+    local hasLocks = math.random(1, 21) >= (21 - level) and true or false
+
+    local maxLocks = 0
+    local lockCounter = 0
+
+    if hasLocks then
+        maxLocks = math.random(1, level % 3 + 2)
+    end
+
     -- lay out bricks such that they touch each other and fill the space
     for y = 1, numRows do
         -- whether we want to enable skipping for this row
@@ -84,6 +94,17 @@ function LevelMaker.createMap(level)
                 skipFlag = not skipFlag
             end
 
+            local isLocked = false
+
+            if lockCounter < maxLocks then
+                print(lockCounter)
+                isLocked = math.random(1, maxLocks - lockCounter) > lockCounter + 1 and true or false
+
+                lockCounter = lockCounter + 1
+            else
+                isLocked = false
+            end
+
             b = Brick(
                 -- x-coordinate
                 (x-1)                   -- decrement x by 1 because tables are 1-indexed, coords are 0
@@ -92,7 +113,8 @@ function LevelMaker.createMap(level)
                 + (13 - numCols) * 16,  -- left-side padding for when there are fewer than 13 columns
                 
                 -- y-coordinate
-                y * 16                  -- just use y * 16, since we need top padding anyway
+                y * 16,                 -- just use y * 16, since we need top padding anyway
+                isLocked
             )
 
             -- if we're alternating, figure out which color/tier we're on
@@ -117,12 +139,15 @@ function LevelMaker.createMap(level)
             -- Lua's version of the 'continue' statement
             ::continue::
         end
-    end 
+    end
 
     -- in the event we didn't generate any bricks, try again
     if #bricks == 0 then
         return self.createMap(level)
     else
-        return bricks
+        return {
+            ['bricks'] = bricks,
+            ['locks'] = lockCounter
+        }
     end
 end

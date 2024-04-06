@@ -28,6 +28,7 @@ function PlayState:enter(params)
     self.highScores = params.highScores
     self.ball = params.ball
     self.level = params.level
+    self.locks = params.locks == nil and 0 or params.locks
 
     self.recoverPoints = 5000
     self.paddleResizePoints = 3500
@@ -83,13 +84,15 @@ function PlayState:update(dt)
         -- only check collision if we're in play
         if brick.inPlay and self.ball:collides(brick) then
 
-            -- add to score
-            self.score = self.score + (brick.tier * 200 + brick.color * 25)
+            -- trigger the brick's hit function
+            local hit = brick:hit(self.paddle.powerups)
 
-            self.resizeScore = self.resizeScore + (brick.tier * 200 + brick.color * 25)
+            if hit then
+                -- add to score
+                self.score = self.score + brick.points
 
-            -- trigger the brick's hit function, which removes it from play
-            brick:hit()
+                self.resizeScore = self.resizeScore + brick.points
+            end
 
             -- if we have enough points, shrink the paddle
             if self.resizeScore > self.paddleResizePoints then

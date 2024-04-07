@@ -75,7 +75,7 @@ function Paddle:init(skin)
     -- into the gPaddleSkins table later
     self.skin = skin
 
-    self.powerups = {
+    self.powerUps = {
         ['key'] = 0,
         ['doubleBall'] = 0
     }
@@ -162,15 +162,28 @@ function Paddle:renderParticles()
 end
 
 --[[
-    Add powerup to the paddle
+    Add PowerUp to the paddle
 ]]
-function Paddle:powerup(powerup)
-    self.powerups[powerup] = 1
+function Paddle:powerUp(powerUp)
+    self.powerUps[powerUp] = 1
+
+    self.psystem:setColors(
+        paletteColors[self.skin].r / 255,
+        paletteColors[self.skin].g / 255,
+        paletteColors[self.skin].b / 255,
+        55 / 255,
+        paletteColors[self.skin].r / 255,
+        paletteColors[self.skin].g / 255,
+        paletteColors[self.skin].b / 255,
+        0
+    )
+
+    self.psystem:emit(16)
 end
 
 --[[
-    Remove powerup from the paddle
+    Remove PowerUp from the paddle
 ]]
-function Paddle:removePowerup(powerup)
-    self.powerups[powerup] = 0
+function Paddle:removePowerUp(powerUp)
+    self.powerUps[powerUp] = 0
 end

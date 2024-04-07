@@ -2,37 +2,57 @@
     GD50
     Breakout Remake
 
-    -- Powerup Class --
+    -- PowerUp Class --
 
     Author: DVDA Games
     hello@dvdagames.com
 
-    Represents a powerup that can be spawned in the game.
-    When the Paddle collides with the powerup, the powerup
+    Represents a powerUp that can be spawned in the game.
+    When the Paddle collides with the powerUp, the powerUp
     applies to the player's Paddle.
 ]]
 
-Powerup = Class{}
+PowerUp = Class{}
 
-function Powerup:init(x, y, type)
+function PowerUp:init(x, y, type)
     self.x = x
     self.y = y
     self.width = 16
     self.height = 16
     self.type = type
-    self.dy = 50
+    self.dy = -50
+    self.dx = math.random(-50, 50)
     self.inPlay = true
 end
 
-function Powerup:update(dt)
+function PowerUp:update(dt)
+    self.x = self.x + self.dx * dt
     self.y = self.y + self.dy * dt
 
     if self.y > VIRTUAL_HEIGHT then
         self.inPlay = false
     end
+
+    if self.x <= 0 then
+        self.x = 0
+        self.dx = -self.dx
+        gSounds['wall-hit']:play()
+    end
+
+    if self.x >= VIRTUAL_WIDTH - 8 then
+        self.x = VIRTUAL_WIDTH - 8
+        self.dx = -self.dx
+        gSounds['wall-hit']:play()
+    end
+
+    if self.y <= 0 then
+        self.y = 0
+        self.dy = -self.dy
+        gSounds['wall-hit']:play()
+    end
 end
 
-function Powerup:collides(target)
+function PowerUp:collides(target)
     if self.x > target.x + target.width or target.x > self.x + self.width then
         return false
     end
@@ -44,38 +64,36 @@ function Powerup:collides(target)
     return true
 end
 
-function Powerup:render()
+function PowerUp:render()
     if self.inPlay then
-      -- TODO: figure out why the powerup sprite doesn't use the right type
         local spriteIndex = 10
-
         if self.type == 'key' then
             spriteIndex = 10
-        elseif self.type == 'double' then
+        elseif self.type == 'doubleBall' then
             spriteIndex = 9
         end
 
-        love.graphics.draw(gTextures['main'], gFrames['powerups'][spriteIndex],
+        love.graphics.draw(gTextures['main'], gFrames['powerUps'][spriteIndex],
             self.x, self.y)
     end
 end
 
-function Powerup:activate(paddle)
-    if self.type == 'double' then
-        paddle:powerup('double')
+function PowerUp:activate(paddle)
+    if self.type == 'doubleBall' then
+        paddle:powerUp('doubleBall')
     elseif self.type == 'key' then
-        paddle:powerup('key')
+        paddle:powerUp('key')
     end
 end
 
-function Powerup:deactivate(paddle)
-    if self.type == 'double' then
-        paddle:removePowerup('double')
+function PowerUp:deactivate(paddle)
+    if self.type == 'doubleBall' then
+        paddle:removePowerUp('doubleBall')
     elseif self.type == 'key' then
-        paddle:removePowerup('key')
+        paddle:removePowerUp('key')
     end
 end
 
-function Powerup:hit()
+function PowerUp:hit()
     self.inPlay = false
 end

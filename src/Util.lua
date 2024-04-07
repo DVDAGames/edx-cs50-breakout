@@ -59,7 +59,7 @@ function GenerateQuadsBricks(atlas)
 end
 
 --[[
-    This function is specifically made to piece out the powerup bricks,
+    This function is specifically made to piece out the powerUp bricks,
     which currently only includes the locked brick, from the sprite sheet.
     Since the sprite sheet has non-uniform sprites within, we have to return
     a subset of GenerateQuads.
@@ -137,10 +137,10 @@ function GenerateQuadsBalls(atlas)
 end
 
 --[[
-    This function is specifically made to piece out the powerups from the
+    This function is specifically made to piece out the powerUps from the
     sprite sheet.
 ]]
-function GenerateQuadsPowerups(atlas)
+function GenerateQuadsPowerUps(atlas)
     local x = 0
     local y = 192
 
@@ -150,6 +150,25 @@ function GenerateQuadsPowerups(atlas)
     for i = 0, 10 do
         quads[counter] = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
         x = x + 16
+        counter = counter + 1
+    end
+
+    return quads
+end
+
+function GenerateQuadsUIPowerUps(atlas)
+    local x = 0
+    local y = 208
+
+    local counter = 1
+    local quads = {}
+
+    local quadHeight = 9
+    local quadWidth = 13
+
+    for i = 0, 1 do
+        quads[counter] = love.graphics.newQuad(x, y, quadWidth, quadHeight, atlas:getDimensions())
+        x = x + quadWidth
         counter = counter + 1
     end
 

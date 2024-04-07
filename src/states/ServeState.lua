@@ -26,6 +26,15 @@ function ServeState:enter(params)
     self.highScores = params.highScores
     self.level = params.level
     self.recoverPoints = params.recoverPoints
+    self.resizeScore = self.resizeScore
+    self.powerUpTimer = self.powerUpTimer
+    self.powerUpScore = self.powerUpScore
+    self.powerUpSpawnTime = self.powerUpSpawnTime
+    self.powerUpSpawnScore = self.powerUpSpawnScore
+    self.powerUpCooldownTimer = self.powerUpCooldownTimer
+
+    self.paddle.powerUps['key'] = 0
+    self.paddle.powerUps['doubleBall'] = 0
 
     -- init new ball (random color for fun)
     self.ball = Ball()
@@ -35,6 +44,7 @@ end
 function ServeState:update(dt)
     -- have the ball track the player
     self.paddle:update(dt)
+
     self.ball.x = self.paddle.x + (self.paddle.width / 2) - 4
     self.ball.y = self.paddle.y - 8
 
@@ -47,9 +57,15 @@ function ServeState:update(dt)
             health = self.health,
             score = self.score,
             highScores = self.highScores,
-            ball = self.ball,
+            balls = {self.ball},
             level = self.level,
-            recoverPoints = self.recoverPoints
+            recoverPoints = self.recoverPoints,
+            resizeScore = self.resizeScore,
+            powerUpTimer = self.powerUpTimer,
+            powerUpScore = self.powerUpScore,
+            powerUpSpawnTime = self.powerUpSpawnTime,
+            powerUpSpawnScore = self.powerUpSpawnScore,
+            powerUpCooldownTimer = self.powerUpCooldownTimer
         })
     end
 

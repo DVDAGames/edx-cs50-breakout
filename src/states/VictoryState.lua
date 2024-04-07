@@ -21,6 +21,12 @@ function VictoryState:enter(params)
     self.health = params.health
     self.ball = params.ball
     self.recoverPoints = params.recoverPoints
+    self.resizeScore = self.resizeScore
+    self.powerUpTimer = self.powerUpTimer
+    self.powerUpScore = self.powerUpScore
+    self.powerUpSpawnTime = self.powerUpSpawnTime
+    self.powerUpSpawnScore = self.powerUpSpawnScore
+    self.powerUpCooldownTimer = self.powerUpCooldownTimer
 end
 
 function VictoryState:update(dt)
@@ -42,7 +48,13 @@ function VictoryState:update(dt)
             health = self.health,
             score = self.score,
             highScores = self.highScores,
-            recoverPoints = self.recoverPoints
+            recoverPoints = self.recoverPoints,
+            resizeScore = self.resizeScore,
+            powerUpTimer = self.powerUpTimer,
+            powerUpScore = self.powerUpScore,
+            powerUpSpawnTime = self.powerUpSpawnTime,
+            powerUpSpawnScore = self.powerUpSpawnScore,
+            powerUpCooldownTimer = self.powerUpCooldownTimer
         })
     end
 end

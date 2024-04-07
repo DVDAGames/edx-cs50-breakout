@@ -105,98 +105,147 @@ end
     Triggers a hit on the brick, taking it out of play if at 0 health or
     changing its color otherwise.
 ]]
-function Brick:hit(powerups, unlock)
-    -- if the player has no key and the brick is locked
-    if self.isLocked and powerups['key'] == 0 then
-        self.psystem:setColors(
-            lockPalette.r / 255,
-            lockPalette.g / 255,
-            lockPalette.b / 255,
-            55 * (self.tier + 1) / 255,
-            lockPalette.r / 255,
-            lockPalette.g / 255,
-            lockPalette.b / 255,
-            0
-        )
-
-        self.psystem:emit(32)
+function Brick:hit(powerUps, isPowerUp)
+    isPowerUp = isPowerUp == nil and false or isPowerUp
+    
+    if isPowerUp then
+        if self.isLocked then
+            self.psystem:setColors(
+                lockPalette.r / 255,
+                lockPalette.g / 255,
+                lockPalette.b / 255,
+                55 * (self.tier + 1) / 255,
+                lockPalette.r / 255,
+                lockPalette.g / 255,
+                lockPalette.b / 255,
+                0
+            )
+        else
+            self.psystem:setColors(
+                paletteColors[self.color].r / 255,
+                paletteColors[self.color].g / 255,
+                paletteColors[self.color].b / 255,
+                55 * (self.tier + 1) / 255,
+                paletteColors[self.color].r / 255,
+                paletteColors[self.color].g / 255,
+                paletteColors[self.color].b / 255,
+                0
+            )
+        end
 
         -- sound on hit
         gSounds['locked']:stop()
         gSounds['locked']:play()
 
+        self.psystem:emit(16)
+
         return false
-    end
-
-        -- unlock the brick if the player has a key     
-    if self.isLocked and powerups['key'] == 1 then
-        self.psystem:setColors(
-            unlockPalette.r / 255,
-            unlockPalette.g / 255,
-            unlockPalette.b / 255,
-            55 * (self.tier + 1) / 255,
-            unlockPalette.r / 255,
-            unlockPalette.g / 255,
-            unlockPalette.b / 255,
-            0
-        )
-
-        self.psystem:emit(32)
-
-        -- sound on hit
-        gSounds['unlocked']:stop()
-        gSounds['unlocked']:play()
-
-        self.isLocked = false
-
-        unlock()
     else
-        -- set the particle system to interpolate between two colors; in this case, we give
-        -- it our self.color but with varying alpha; brighter for higher tiers, fading to 0
-        -- over the particle's lifetime (the second color)
-        self.psystem:setColors(
-            paletteColors[self.color].r / 255,
-            paletteColors[self.color].g / 255,
-            paletteColors[self.color].b / 255,
-            55 * (self.tier + 1) / 255,
-            paletteColors[self.color].r / 255,
-            paletteColors[self.color].g / 255,
-            paletteColors[self.color].b / 255,
-            0
-        )
 
-        self.psystem:emit(64)
+        -- if the player has no key and the brick is locked
+        if self.isLocked then
+            if powerUps and powerUps['key'] == 0 then
+                self.psystem:setColors(
+                    lockPalette.r / 255,
+                    lockPalette.g / 255,
+                    lockPalette.b / 255,
+                    55 * (self.tier + 1) / 255,
+                    lockPalette.r / 255,
+                    lockPalette.g / 255,
+                    lockPalette.b / 255,
+                    0
+                )
 
-        -- sound on hit
-        gSounds['brick-hit-2']:stop()
-        gSounds['brick-hit-2']:play()
-    end
+                self.psystem:emit(32)
 
-    -- if we're at a higher tier than the base, we need to go down a tier
-    -- if we're already at the lowest color, else just go down a color
-    if self.tier > 0 then
-        if self.color == 1 then
-            self.tier = self.tier - 1
-            self.color = 5
+                -- sound on hit
+                gSounds['locked']:stop()
+                gSounds['locked']:play()
+
+                return false
+
+            -- unlock the brick if the player has a key
+            elseif powerUps and powerUps['key'] == 1 then
+                self.psystem:setColors(
+                    unlockPalette.r / 255,
+                    unlockPalette.g / 255,
+                    unlockPalette.b / 255,
+                    55 * (self.tier + 1) / 255,
+                    unlockPalette.r / 255,
+                    unlockPalette.g / 255,
+                    unlockPalette.b / 255,
+                    0
+                )
+
+                self.psystem:emit(32)
+
+                -- sound on hit
+                gSounds['unlocked']:stop()
+                gSounds['unlocked']:play()
+
+                self.isLocked = false
+            end
         else
-            self.color = self.color - 1
+            if self.color and paletteColors[self.color] then
+                -- set the particle system to interpolate between two colors; in this case, we give
+                -- it our self.color but with varying alpha; brighter for higher tiers, fading to 0
+                -- over the particle's lifetime (the second color)
+                self.psystem:setColors(
+                    paletteColors[self.color].r / 255,
+                    paletteColors[self.color].g / 255,
+                    paletteColors[self.color].b / 255,
+                    55 * (self.tier + 1) / 255,
+                    paletteColors[self.color].r / 255,
+                    paletteColors[self.color].g / 255,
+                    paletteColors[self.color].b / 255,
+                    0
+                )
+            else
+                self.psystem:setColors(
+                    lockPalette.r / 255,
+                    lockPalette.g / 255,
+                    lockPalette.b / 255,
+                    55 * (self.tier + 1) / 255,
+                    lockPalette.r / 255,
+                    lockPalette.g / 255,
+                    lockPalette.b / 255,
+                    0
+                )
+            end
+
+            self.psystem:emit(64)
+
+            -- sound on hit
+            gSounds['brick-hit-2']:stop()
+            gSounds['brick-hit-2']:play()
         end
-    else
-        -- if we're in the first tier and the base color, remove brick from play
-        if self.color == 1 then
-            self.inPlay = false
+
+        -- if we're at a higher tier than the base, we need to go down a tier
+        -- if we're already at the lowest color, else just go down a color
+        if self.tier > 0 then
+            if self.color == 1 then
+                self.tier = self.tier - 1
+                self.color = 5
+            else
+                self.color = self.color - 1
+            end
         else
-            self.color = self.color - 1
+            -- if we're in the first tier and the base color, remove brick from play
+            if self.color == 1 then
+                self.inPlay = false
+            else
+                self.color = self.color - 1
+            end
         end
-    end
 
-    -- play a second layer sound if the brick is destroyed
-    if not self.inPlay then
-        gSounds['brick-hit-1']:stop()
-        gSounds['brick-hit-1']:play()
-    end
+        -- play a second layer sound if the brick is destroyed
+        if not self.inPlay then
+            gSounds['brick-hit-1']:stop()
+            gSounds['brick-hit-1']:play()
+        end
 
-    return true
+        return true
+    end
 end
 
 function Brick:update(dt)

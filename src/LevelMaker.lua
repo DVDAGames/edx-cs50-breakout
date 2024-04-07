@@ -57,6 +57,11 @@ function LevelMaker.createMap(level)
         maxLocks = math.random(1, level % 3 + 2)
     end
 
+    if DEBUG_MODE then
+        -- try to generate at least one lock by setting a high maximum locks
+        maxLocks = 10
+    end
+
     -- lay out bricks such that they touch each other and fill the space
     for y = 1, numRows do
         -- whether we want to enable skipping for this row
@@ -97,7 +102,6 @@ function LevelMaker.createMap(level)
             local isLocked = false
 
             if lockCounter < maxLocks then
-                print(lockCounter)
                 isLocked = math.random(1, maxLocks - lockCounter) > lockCounter + 1 and true or false
 
                 lockCounter = lockCounter + 1

@@ -6,10 +6,10 @@ The game is a clone of the classic Atari game Breakout, where the player must us
 
 The goal of this project is to take the provided [Love2D]() project and add several features to it:
 
-- [x] Powerup Class and spawning
-- [ ] Double Ball Powerup
-- [ ] Key Powerup
-- [x] Locked bricks that require key powerup to break
+- [x] PowerUp Class and spawning PowerUps
+- [x] Double Ball PowerUp
+- [x] Key PowerUp
+- [x] Locked bricks that require key PowerUp to break
 - [x] Dynamic paddle size based on score and losing a life
 
 ## Dynamic Paddle Size
@@ -81,11 +81,45 @@ To make this appear as expected, the `Paddle:renderParticles()` method needs to 
 
 Adding locked bricks in a way that feels fair was an interesting challenge. Ultimately I settled on a random system that increases in likelihood as the player progresses and also allows for more locked bricks as the player progresses.
 
+## PowerUps
+
+Adding PowerUps makes the game more interesting, but it's hard to tune the respawn timing and cooldown timing to make the game feel fun and not boring when you don't have the double ball PowerUp.
+
+I decided to have powerups spawn in front of the player's paddle and then move towards the top of the screen. They have similar collision and bounce physics to the ball, so they will bounce off the walls and the the bricks until hitting the player's paddle or passing through the bottom of the screen.
+
+### Key PowerUp
+
+The first PowerUp I implemented was the Key, because I already had [locked bricks](#locked-bricks) figured out and needed to be able to break them.
+
+This PowerUp just makes it possible to unlock Locked Bricks by hitting them with the ball, and when you acquire it, the UI updates to have a little key sprite next to the health meter.
+
+The Key PowerUp will only spawn in levels with Locked Bricks and only if the player still has Locked Bricks remaining on the screen.
+
+If there are only Locked Bricks, after a short period of time, the Key PowerUp will spawn even if the player hasn't reached the score or timing threshold for powerups to spawn.
+
+### Double Ball PowerUp
+
+This one was more complicated, but turning the `ball` parameter for the PlayState into a `balls` table allowed me to add another ball to the game and also only trigger a health loss or game loss when all of the balls have passed through the bottom of the screen.
+
+This means that a clever player can trade out a ball that is going to be too hard to reach for the Double Ball PowerUp to launch a new ball and keep the game going.
+
+Each ball has collision detection with the walls, the paddle, the bricks, and each other ball - though a ball to ball collision is fairly rare in my playtesting, so it's not quite as well-tuned.
+
+## Other Quality of Life Improvements
+
+I added the [lovebird](https://github.com/rxi/lovebird) dependency to make it easier to debug the project and see what's going on in the game's current state and also added a `DEBUG_MODE` flag that makes it easy to toggle this on and off.
+
+When `DEBUG_MODE` is `true`, in addition to `lovebird` being enabled, the various score and timing thresholds are all decreased dramatically to allow for quicker testing and the background music is disabled because it's just too much when you're stopping and starting the game a bunch during development.
+
 ## Issues with the Current Implementation
+
+These issues exist in the base game project that was provided, and I did not address them while I was adding the required features for this project.
+
+Given more time, I would go back and address these to make the game feel much tighter, more refined, and much more fun to play.
 
 ![janky phsyics](./assets/breakout-janky.gif)
 
 - "Floaty" ball physics: the initial serve can be very slow and make the game feel boring and unresponsive
 - Naive collision detection: the collision detection algorithm does not seem to take into account things like the paddle direction (which should be able to influence the direction of the ball when it leaves the paddle) or properly handle corner hits - which sometimes make the ball suddenly pop out of the top of the paddle
-- Inconsistent ball acceleration: the ball occasionally gets bursts of speed or slows down for no apparent reason which makes the game physics feel confusing
+- Inconsistent ball acceleration: the ball occasionally gets bursts of speed or slows down for no apparent reason which makes the game physics feel confusing and inconsistent
 

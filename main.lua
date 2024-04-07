@@ -24,8 +24,12 @@
     http://www.soundcloud.com/empyreanma
 ]]
 
+-- comment/uncomment to enable debugging mode
+require 'src/Debugging'
 
 require 'src/Dependencies'
+
+DEBUG_MODE = false
 
 --[[
     Called just once at the beginning of the game; used to set up
@@ -69,7 +73,8 @@ function love.load()
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
         ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
         ['powerBricks'] = GenerateQuadsPowerBricks(gTextures['main']),
-        ['powerups'] = GenerateQuadsPowerups(gTextures['main'])
+        ['powerUps'] = GenerateQuadsPowerUps(gTextures['main']),
+        ['powerUpUIs'] = GenerateQuadsUIPowerUps(gTextures['main'])
     }
     
     -- initialize our virtual resolution, which will be rendered within our
@@ -100,7 +105,7 @@ function love.load()
         ['grow'] = love.audio.newSource('sounds/grow.wav', 'static'),
         ['locked'] = love.audio.newSource('sounds/locked.wav', 'static'),
         ['unlocked'] = love.audio.newSource('sounds/unlocked.wav', 'static'),
-        ['powerup'] = love.audio.newSource('sounds/powerup.wav', 'static'),
+        ['powerUp'] = love.audio.newSource('sounds/powerUp.wav', 'static'),
 
         ['music'] = love.audio.newSource('sounds/music.wav', 'static')
     }
@@ -130,9 +135,11 @@ function love.load()
         highScores = loadHighScores()
     })
 
-    -- play our music outside of all states and set it to looping
-    gSounds['music']:play()
-    gSounds['music']:setLooping(true)
+    if not DEBUG_MODE then
+        -- play our music outside of all states and set it to looping
+        gSounds['music']:play()
+        gSounds['music']:setLooping(true)
+    end
 
     -- a table we'll use to keep track of which keys have been pressed this
     -- frame, to get around the fact that LÖVE's default callback won't let us
@@ -164,6 +171,10 @@ function love.update(dt)
 
     -- reset keys pressed
     love.keyboard.keysPressed = {}
+
+    if DEBUG_MODE and lovebird then
+        lovebird.update()
+    end
 end
 
 --[[
@@ -288,6 +299,17 @@ function renderHealth(health)
     for i = 1, 3 - health do
         love.graphics.draw(gTextures['hearts'], gFrames['hearts'][2], healthX, 4)
         healthX = healthX + 11
+    end
+end
+
+function renderPowerUps(paddle)
+    local powerUpX = VIRTUAL_WIDTH - 115
+
+    if paddle then
+        if paddle.powerUps['key'] == 1 then
+            love.graphics.draw(gTextures['main'], gFrames['powerUpUIs'][1], powerUpX, 4)
+            powerUpX = powerUpX - 13
+        end
     end
 end
 

@@ -121,16 +121,32 @@ function Brick:hit(powerUps, isPowerUp)
                 0
             )
         else
-            self.psystem:setColors(
-                paletteColors[self.color].r / 255,
-                paletteColors[self.color].g / 255,
-                paletteColors[self.color].b / 255,
-                55 * (self.tier + 1) / 255,
-                paletteColors[self.color].r / 255,
-                paletteColors[self.color].g / 255,
-                paletteColors[self.color].b / 255,
-                0
-            )
+            if self.color and paletteColors[self.color] then
+                -- set the particle system to interpolate between two colors; in this case, we give
+                -- it our self.color but with varying alpha; brighter for higher tiers, fading to 0
+                -- over the particle's lifetime (the second color)
+                self.psystem:setColors(
+                    paletteColors[self.color].r / 255,
+                    paletteColors[self.color].g / 255,
+                    paletteColors[self.color].b / 255,
+                    55 * (self.tier + 1) / 255,
+                    paletteColors[self.color].r / 255,
+                    paletteColors[self.color].g / 255,
+                    paletteColors[self.color].b / 255,
+                    0
+                )
+            else
+                self.psystem:setColors(
+                    lockPalette.r / 255,
+                    lockPalette.g / 255,
+                    lockPalette.b / 255,
+                    55 * (self.tier + 1) / 255,
+                    lockPalette.r / 255,
+                    lockPalette.g / 255,
+                    lockPalette.b / 255,
+                    0
+                )
+            end
         end
 
         -- sound on hit

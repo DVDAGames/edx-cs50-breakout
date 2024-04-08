@@ -29,6 +29,7 @@ require 'src/Debugging'
 
 require 'src/Dependencies'
 
+-- toggle debug mode
 DEBUG_MODE = false
 
 --[[

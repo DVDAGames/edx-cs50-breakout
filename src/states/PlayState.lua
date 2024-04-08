@@ -45,9 +45,11 @@ function PlayState:enter(params)
 
     if DEBUG_MODE then
         self.recoverPoints = 500
-        self.paddleResizePoints = 350
-        self.powerUpSpawnTime = 5
+        self.paddleResizePoints = 1000
+        self.powerUpSpawnTime = 2
         self.powerUpSpawnScore = 100
+        self.powerUpCooldownTime = 2
+        self.powerUpCooldownTimer = 2
     end
 
     -- give ball random starting velocity
@@ -71,7 +73,7 @@ function PlayState:update(dt)
 
     self.powerUpTimer = self.powerUpTimer + dt
 
-    if not self.powerUp and (self.paddle.powerUps['key'] == 0 and self.locks > 0 or self.paddle.powerUps['doubleBall'] == 0) then
+    if not self.powerUp and ((self.paddle.powerUps['key'] == 0 and self.locks > 0) or self.paddle.powerUps['doubleBall'] == 0) then
         self.powerUpCooldownTimer = self.powerUpCooldownTimer + dt
     end
 
@@ -250,7 +252,7 @@ function PlayState:update(dt)
                             end
 
                             -- if we have enough points, shrink the paddle
-                            if self.resizeScore > self.paddleResizePoints then
+                            if self.resizeScore > self.paddleResizePoints and self.paddle.size > 1 then
                                 -- can't go below 1 size
                                 self.paddle:setSize(self.paddle.size - 1)
 
@@ -265,7 +267,7 @@ function PlayState:update(dt)
                             end
 
                             -- if we have enough points, recover a point of health
-                            if self.score > self.recoverPoints then
+                            if self.score > self.recoverPoints and self.health < 3 then
                                 -- can't go above 3 health
                                 self.health = math.min(3, self.health + 1)
 
